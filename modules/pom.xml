@@ -36,6 +36,7 @@
     <module>jooby-handlebars</module>
     <module>jooby-pebble</module>
     <module>jooby-rocker</module>
+    <module>jooby-vaadin</module>
 
     <module>jooby-pac4j</module>
 
