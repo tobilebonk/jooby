@@ -1,6 +1,9 @@
+/**
+ * Jooby https://jooby.io
+ * Apache License Version 2.0 https://jooby.io/LICENSE.txt
+ * Copyright 2014 Edgar Espina
+ */
 package io.jooby.servlet;
-
-import org.jetbrains.annotations.NotNull;
 
 import javax.servlet.ReadListener;
 import javax.servlet.ServletInputStream;
@@ -26,11 +29,11 @@ public class ServletInputStreamImpl extends ServletInputStream {
 
   }
 
-  @Override public int read(@NotNull byte[] b) throws IOException {
+  @Override public int read(byte[] b) throws IOException {
     return input.read(b);
   }
 
-  @Override public int read(@NotNull byte[] b, int off, int len) throws IOException {
+  @Override public int read(byte[] b, int off, int len) throws IOException {
     return input.read(b, off, len);
   }
 

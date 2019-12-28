@@ -1,8 +1,15 @@
+/**
+ * Jooby https://jooby.io
+ * Apache License Version 2.0 https://jooby.io/LICENSE.txt
+ * Copyright 2014 Edgar Espina
+ */
 package io.jooby.servlet;
 
+import com.typesafe.config.Config;
 import io.jooby.Jooby;
 import io.jooby.MediaType;
 import io.jooby.Router;
+import io.jooby.SneakyThrows;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterRegistration;
@@ -17,7 +24,9 @@ import javax.servlet.descriptor.JspConfigDescriptor;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.EventListener;
@@ -27,9 +36,11 @@ import java.util.stream.Collectors;
 
 public class ServletContextImpl implements ServletContext {
   private final Jooby application;
+  private final Map<String, Servlet> servlets;
 
-  public ServletContextImpl(Jooby application) {
+  public ServletContextImpl(Jooby application, Map<String, Servlet> servlets) {
     this.application = application;
+    this.servlets = servlets;
   }
 
   @Override public String getContextPath() {
@@ -88,43 +99,52 @@ public class ServletContextImpl implements ServletContext {
   }
 
   @Override public Servlet getServlet(String name) throws ServletException {
-    return null;
+    return servlets.get(name);
   }
 
   @Override public Enumeration<Servlet> getServlets() {
-    return null;
+    return Collections.enumeration(servlets.values());
   }
 
   @Override public Enumeration<String> getServletNames() {
-    return null;
+    return Collections.enumeration(servlets.keySet());
   }
 
   @Override public void log(String msg) {
-
+    application.getLog().info(msg);
   }
 
   @Override public void log(Exception exception, String msg) {
-
+    application.getLog().error(msg, exception);
   }
 
   @Override public void log(String message, Throwable throwable) {
-
+    application.getLog().error(message, throwable);
   }
 
   @Override public String getRealPath(String path) {
-    return null;
+    try {
+      URL resource = getClassLoader().getResource(path);
+      return resource.getProtocol().equals("file") ? Paths.get(resource.toURI()).toString() : null;
+    } catch (URISyntaxException x) {
+      throw SneakyThrows.propagate(x);
+    }
   }
 
   @Override public String getServerInfo() {
-    return null;
+    return application.getServerOptions().getServer();
   }
 
   @Override public String getInitParameter(String name) {
-    return null;
+    return application.getEnvironment().getProperty("servlet." + name, null);
   }
 
   @Override public Enumeration<String> getInitParameterNames() {
-    return null;
+    Config config = application.getConfig();
+    if (config.hasPath("servlet")) {
+      return Collections.enumeration(config.getConfig("servlet").root().keySet());
+    }
+    return Collections.emptyEnumeration();
   }
 
   @Override public boolean setInitParameter(String name, String value) {
@@ -132,23 +152,23 @@ public class ServletContextImpl implements ServletContext {
   }
 
   @Override public Object getAttribute(String name) {
-    return null;
+    return application.getAttributes().get(name);
   }
 
   @Override public Enumeration<String> getAttributeNames() {
-    return null;
+    return Collections.enumeration(application.getAttributes().keySet());
   }
 
   @Override public void setAttribute(String name, Object object) {
-
+    application.attribute(name, object);
   }
 
   @Override public void removeAttribute(String name) {
-
+    application.getAttributes().remove(name);
   }
 
   @Override public String getServletContextName() {
-    return null;
+    return application.getName();
   }
 
   @Override public ServletRegistration.Dynamic addServlet(String servletName,
@@ -242,7 +262,7 @@ public class ServletContextImpl implements ServletContext {
   }
 
   @Override public ClassLoader getClassLoader() {
-    return null;
+    return application.getClassLoader();
   }
 
   @Override public void declareRoles(String... roleNames) {

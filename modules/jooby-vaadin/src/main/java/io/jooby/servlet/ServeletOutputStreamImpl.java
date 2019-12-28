@@ -1,6 +1,9 @@
+/**
+ * Jooby https://jooby.io
+ * Apache License Version 2.0 https://jooby.io/LICENSE.txt
+ * Copyright 2014 Edgar Espina
+ */
 package io.jooby.servlet;
-
-import org.jetbrains.annotations.NotNull;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.WriteListener;
@@ -22,11 +25,11 @@ public class ServeletOutputStreamImpl extends ServletOutputStream {
 
   }
 
-  @Override public void write(@NotNull byte[] b) throws IOException {
+  @Override public void write(byte[] b) throws IOException {
     output.write(b);
   }
 
-  @Override public void write(@NotNull byte[] b, int off, int len) throws IOException {
+  @Override public void write(byte[] b, int off, int len) throws IOException {
     output.write(b, off, len);
   }
 

@@ -1,3 +1,8 @@
+/**
+ * Jooby https://jooby.io
+ * Apache License Version 2.0 https://jooby.io/LICENSE.txt
+ * Copyright 2014 Edgar Espina
+ */
 package io.jooby.servlet;
 
 import io.jooby.FileUpload;
@@ -5,7 +10,10 @@ import io.jooby.FileUpload;
 import javax.servlet.http.Part;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Collection;
+import java.util.Collections;
 
 public class PartImpl implements Part {
   private FileUpload upload;
@@ -15,31 +23,31 @@ public class PartImpl implements Part {
   }
 
   @Override public InputStream getInputStream() throws IOException {
-    return null;
+    return upload.stream();
   }
 
   @Override public String getContentType() {
-    return null;
+    return upload.getContentType();
   }
 
   @Override public String getName() {
-    return null;
+    return upload.getFileName();
   }
 
   @Override public String getSubmittedFileName() {
-    return null;
+    return upload.getFileName();
   }
 
   @Override public long getSize() {
-    return 0;
+    return upload.getFileSize();
   }
 
   @Override public void write(String fileName) throws IOException {
-
+    Files.copy(upload.path(), Paths.get(fileName));
   }
 
   @Override public void delete() throws IOException {
-
+    upload.destroy();
   }
 
   @Override public String getHeader(String name) {
@@ -47,10 +55,10 @@ public class PartImpl implements Part {
   }
 
   @Override public Collection<String> getHeaders(String name) {
-    return null;
+    return Collections.emptySet();
   }
 
   @Override public Collection<String> getHeaderNames() {
-    return null;
+    return Collections.emptySet();
   }
 }

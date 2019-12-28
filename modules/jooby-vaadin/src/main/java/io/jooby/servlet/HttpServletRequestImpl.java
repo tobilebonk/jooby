@@ -1,3 +1,8 @@
+/**
+ * Jooby https://jooby.io
+ * Apache License Version 2.0 https://jooby.io/LICENSE.txt
+ * Copyright 2014 Edgar Espina
+ */
 package io.jooby.servlet;
 
 import io.jooby.Context;
@@ -35,9 +40,11 @@ import java.util.stream.Stream;
 public class HttpServletRequestImpl implements HttpServletRequest {
 
   private Context ctx;
+  private ServletContext sc;
 
-  public HttpServletRequestImpl(Context ctx) {
+  public HttpServletRequestImpl(Context ctx, ServletContext sc) {
     this.ctx = ctx;
+    this.sc = sc;
   }
 
   @Override public String getAuthType() {
@@ -318,7 +325,7 @@ public class HttpServletRequestImpl implements HttpServletRequest {
   }
 
   @Override public ServletContext getServletContext() {
-    return new ServletContextImpl(ctx.getRouter());
+    return sc;
   }
 
   @Override public AsyncContext startAsync() throws IllegalStateException {
